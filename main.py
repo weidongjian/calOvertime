@@ -46,10 +46,10 @@ def calOverTimeReal(item):
         # 减去午休的时间
         timeDiffSec = timeDiffSec - LAUNCH_BREAK_SECOND
 
-    if timeDiffSec > TOTAL_WORK_SECOND:
-        print(item.name + item.idValue + " 加班一天")
-    else:
-        print(item.name + item.idValue + " 加班半天")
+    finalTime = datetime.timedelta(seconds=timeDiffSec)
+    workResult = str(finalTime)
+    mat = "{:10}\t{:10}\t{:10}"
+    print(mat.format(item.name, item.idValue, workResult))
 
 
 def updateItem(tempItem, nameValue, idValue, timeValue):
@@ -73,9 +73,10 @@ def updateItem(tempItem, nameValue, idValue, timeValue):
 
 
 def main():
-    sourceFile = "/Users/weigan/Downloads/7月考勤全员.xlsx"
-    workbook = openpyxl.load_workbook(sourceFile, read_only=True)
-    sheet = workbook.worksheets[0]
+    sourceFile = input("请输入考勤文件地址：")
+    # sourceFile = "/Users/weigan/Downloads/7月考勤全员.xlsx"
+    workbook = openpyxl.load_workbook(sourceFile.strip(), read_only=True)
+    sheet = workbook.worksheets[1]
     sheet.iter_rows(min_row=5)
     tempItem = workItem("", "", "", "")
     for row in sheet.iter_rows(min_row=5, values_only=True):
