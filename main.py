@@ -10,10 +10,10 @@ import datetime
 TOTAL_WORK_SECOND = 7.5 * 60 * 60
 LAUNCH_BREAK_SECOND = 1.5 * 60 * 60
 
-COLUMN_WEEK = 2
-COLUMN_NAME = 3
-COLUMN_ID = 4
-COLUMN_TIME = 9
+COLUMN_WEEK = 1
+COLUMN_NAME = 2
+COLUMN_ID = 3
+COLUMN_TIME = 8
 
 
 class workItem:
@@ -76,16 +76,15 @@ def main():
     sourceFile = "/Users/weigan/Downloads/7月考勤全员.xlsx"
     workbook = openpyxl.load_workbook(sourceFile, read_only=True)
     sheet = workbook.worksheets[0]
-    maxRow = sheet.max_row + 1
+    sheet.iter_rows(min_row=5)
     tempItem = workItem("", "", "", "")
-    for num in range(5, maxRow):
-        weekValue = sheet.cell(row=num, column=COLUMN_WEEK).value
+    for row in sheet.iter_rows(min_row=5, values_only=True):
+        weekValue = row[COLUMN_WEEK]
+        nameValue = row[COLUMN_NAME]
+        idValue = row[COLUMN_ID]
+        timeValue = row[COLUMN_TIME]
         if not isWeekend(weekValue):
             continue
-
-        nameValue = sheet.cell(row=num, column=COLUMN_NAME).value
-        idValue = sheet.cell(row=num, column=COLUMN_ID).value
-        timeValue = sheet.cell(row=num, column=COLUMN_TIME).value
         result = updateItem(tempItem, nameValue, idValue, timeValue)
         if not result:
             tempItem.reset()
