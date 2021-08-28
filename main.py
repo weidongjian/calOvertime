@@ -5,11 +5,13 @@
 
 import openpyxl
 import datetime
+import chinese_calendar
 
 # 一天工作多少秒
 TOTAL_WORK_SECOND = 7.5 * 60 * 60
 LAUNCH_BREAK_SECOND = 1.5 * 60 * 60
 
+COLUMN_DATE = 0
 COLUMN_WEEK = 1
 COLUMN_NAME = 2
 COLUMN_ID = 3
@@ -31,7 +33,8 @@ class workItem:
 
 
 def isWeekend(dataStr):
-    return dataStr == "星期六" or dataStr == "星期日"
+    date = datetime.datetime.strptime(dataStr, "%Y/%m/%d")
+    return chinese_calendar.is_holiday(date)
 
 
 def calOverTimeReal(item):
@@ -73,18 +76,19 @@ def updateItem(tempItem, nameValue, idValue, timeValue):
 
 
 def main():
-    sourceFile = input("请输入考勤文件地址：")
-    # sourceFile = "/Users/weigan/Downloads/7月考勤全员.xlsx"
+    # sourceFile = input("请输入考勤文件地址：")
+    sourceFile = "/Users/weigan/Downloads/7月考勤全员.xlsx"
     workbook = openpyxl.load_workbook(sourceFile.strip(), read_only=True)
     sheet = workbook.worksheets[1]
     sheet.iter_rows(min_row=5)
     tempItem = workItem("", "", "", "")
     for row in sheet.iter_rows(min_row=5, values_only=True):
+        dateValue = row[COLUMN_DATE]
         weekValue = row[COLUMN_WEEK]
         nameValue = row[COLUMN_NAME]
         idValue = row[COLUMN_ID]
         timeValue = row[COLUMN_TIME]
-        if not isWeekend(weekValue):
+        if not isWeekend(dateValue):
             continue
         result = updateItem(tempItem, nameValue, idValue, timeValue)
         if not result:
